@@ -1,15 +1,14 @@
-from flask import Flask, request, redirect, render_template
 from flask_cors import CORS,cross_origin
+from flask import Flask, request
 from flask import jsonify
-import pickle
 import pandas as pd
 import numpy as np
+import pickle
 
 app = Flask(__name__)
 cors = CORS(app)
 model = pickle.load(open('LinearRegressionModel.pkl','rb'))
 car = pd.read_csv('cleaned_car_data.csv')
-
 
 @app.route('/data', methods=['GET', 'POST'])
 @cross_origin()
@@ -51,12 +50,10 @@ def predict():
             "prediction": np.round(prediction[0], 2).tolist()
         }
 
-        # return str(np.round(prediction[0],2))
         return jsonify(response)
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "Internal Server Error"}), 500
-
 
 if __name__ == "__main__":
     app.run(debug=True)
